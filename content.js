@@ -1,4 +1,12 @@
-const body = document.querySelector('body');
-const addElement = document.createElement('h1');
-addElement.textContent = 'Hello!!';
-body.prepend(addElement);
+chrome.runtime.onMessage.addListener((request, options) => {
+  // background.jsからイベントを受け取る
+  if (request.name === 'displayUrl:contentScripts') {
+    const body = document.querySelector('body')
+    const addElement = document.createElement('h1');
+
+    // 受け取った URL を画面に表示する
+    addElement.textContent = `URL is ${ request.data.url }`;
+    
+    body.prepend(addElement)
+  }
+});

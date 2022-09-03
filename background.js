@@ -1,5 +1,21 @@
-// tabs.query は指定した条件に当てはまるタブを全て取得する。
-// この場合はアクティブなタブが一つ取得できる。
-chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-  console.log({ tabs })
+chrome.runtime.onMessage.addListener((request) => {
+  // 期待通りのリクエストかどうかをチェック
+  if (request.name === 'displayUrl:background') {
+    let url;
+    let id;
+
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      console.log({ tabs })
+      url = tabs[0].url;
+      id = tabs[0].id
+
+      // content_script へデータを送る
+      chrome.tabs.sendMessage(id, { // content_script はタブごとに存在するため ID 指定する必要がある
+        name: 'displayUrl:contentScripts',
+        data: {
+          url
+        }
+      })
+    });
+  }
 });
